@@ -71,7 +71,11 @@ def main() -> None:
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
 
-    app.run_polling()
+    try:
+        app.run_polling()
+    except (KeyboardInterrupt, SystemExit):
+        # Graceful shutdown without verbose traceback on Ctrl+C
+        print("Bot stopped by user.")
 
 
 if __name__ == "__main__":

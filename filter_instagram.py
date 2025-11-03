@@ -21,12 +21,12 @@ def load_names_from_file(filename: str | Path):
 
 # --- LOAD ALL EXTERNAL DATABASES ---
 # The script now depends entirely on these files for its accuracy.
-MALE_NAMES_EXCEPTIONS = load_names_from_file('males_names.txt')
-FEMALE_BUSINESS_KEYWORDS = load_names_from_file('female_business_keywords.txt')
+MALE_NAMES_EXCEPTIONS = load_names_from_file('keywords/males_names.txt')
+FEMALE_BUSINESS_KEYWORDS = load_names_from_file('keywords/female_business_keywords.txt')
 
 # Combine the Russian and Ukrainian female name lists from the txt files.
 # Make sure these files contain both Cyrillic and Latin names for best results.
-FEMALE_NAMES = load_names_from_file('ukrainian_female_names.txt') | load_names_from_file('russian_female_names.txt')
+FEMALE_NAMES = load_names_from_file('keywords/ukrainian_female_names.txt') | load_names_from_file('keywords/russian_female_names.txt')
 
 # Female name endings (used as a last resort)
 FEMALE_ENDINGS = {'a', 'ya', 'ia', 'ina', 'ova', 'eva', 'skaya', 'ivna', 'yivna', 'ovna'}

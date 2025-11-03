@@ -9,6 +9,7 @@ from telegram import Update, InputFile
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
 from filter_instagram import filter_csv
+from uploader import upload_to_supabase
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -46,6 +47,15 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
             # Run CPU-bound filtering in a worker thread
             await asyncio.to_thread(filter_csv, in_path, out_path)
+
+            # Optional: upload to Supabase if enabled via env vars
+            try:
+                uploaded = await asyncio.to_thread(upload_to_supabase, out_path)
+                if uploaded:
+                    await update.message.reply_text(f"Uploaded {uploaded} rows to Supabase.")
+            except Exception as e:
+                # Don't fail the bot if upload isn't configured
+                await update.message.reply_text(f"Supabase upload skipped/failed: {e}")
 
             with out_path.open("rb") as f:
                 await update.message.reply_document(

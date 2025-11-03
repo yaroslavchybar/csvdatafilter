@@ -1,8 +1,9 @@
 import csv
 import re
-from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Union
+import os
+from pathlib import Path
 
 from clean_data import clean_csv, detect_csv_separator
 
@@ -152,3 +153,10 @@ if __name__ == "__main__":
     input_csv_file = "instagram_data.csv"
     output_csv_file = "filtered_instagram_data_final.csv"
     filter_csv(input_csv_file, output_csv_file)
+    # Optional Supabase upload in CLI mode
+    try:
+        if os.getenv("SUPABASE_UPLOAD", "false").lower() == "true":
+            from uploader import upload_to_supabase
+            upload_to_supabase(Path(output_csv_file))
+    except Exception as e:
+        print(f"Supabase upload skipped/failed: {e}")

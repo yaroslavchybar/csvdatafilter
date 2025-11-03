@@ -86,7 +86,7 @@ def classify_gender(username: str, fullname: str) -> str:
     return 'keep'
 
 def filter_instagram_data(input_file: str, output_file: str):
-    """Reads, filters, and writes the Instagram data."""
+    """Reads, filters, and writes the Instagram data. Returns stats dict."""
     try:
         sep = detect_csv_separator(input_file)
         with open(input_file, 'r', encoding='utf-8') as infile, \
@@ -119,11 +119,18 @@ def filter_instagram_data(input_file: str, output_file: str):
             print(f"   Profiles removed: {removed_count}")
             print(f"   Remaining profiles: {total_processed - removed_count}")
             print(f"   Filtered data saved to: {output_file}")
+            return {
+                "total_processed": total_processed,
+                "removed": removed_count,
+                "remaining": total_processed - removed_count,
+                "output_file": output_file,
+            }
 
     except FileNotFoundError:
         print(f"Error: The input file '{input_file}' was not found.")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+    return None
 
 
 def preprocess_csv(input_path: Union[str, Path]) -> tuple[Path, TemporaryDirectory]:
@@ -139,11 +146,11 @@ def preprocess_csv(input_path: Union[str, Path]) -> tuple[Path, TemporaryDirecto
     return out_path, tmpdir
 
 
-def filter_csv(input_path: Union[str, Path], output_path: Union[str, Path]) -> None:
-    """Public API used by the Telegram bot; clean first, then filter."""
+def filter_csv(input_path: Union[str, Path], output_path: Union[str, Path]):
+    """Public API used by the Telegram bot; clean first, then filter. Returns stats dict or None."""
     cleaned_path, tmpdir = preprocess_csv(input_path)
     try:
-        filter_instagram_data(str(cleaned_path), str(output_path))
+        return filter_instagram_data(str(cleaned_path), str(output_path))
     finally:
         # Ensure temporary directory is removed after filtering completes
         tmpdir.cleanup()
